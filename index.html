@@ -4,20 +4,30 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Swapnil Jagtap | ADAPTIV</title>
-<meta name="description" content="ADAPTIV – Lean Manufacturing & Industry 4.0 solutions across MENA. Modular workstations, racking systems, trolleys, and visual management." />
+<meta name="description" content="ADAPTIV – Lean Manufacturing & Operational Solutions across MENA." />
+
+<!-- Leaflet (OpenStreetMap) for branches map -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <style>
 :root{
   --yellow:#FDB813;
   --yellow-dark:#f4a900;
+
   --bg:#FAFAFA;
   --card:#ffffff;
-  --text:#111111;
-  --text2:#3d3d3d;
+
+  --black:#0F0F10;
+  --black-2:#17181a;
+
+  --text:#101010;
+  --text-secondary:#3f3f3f;
   --muted:#7a7a7a;
   --line:#E7E7E7;
-  --shadow:0 10px 28px rgba(0,0,0,.08);
-  --shadow2:0 16px 46px rgba(0,0,0,.14);
+
+  --shadow:0 10px 30px rgba(0,0,0,.08);
+  --shadow-hover:0 16px 46px rgba(0,0,0,.14);
 }
 
 *{box-sizing:border-box}
@@ -27,231 +37,262 @@ body{
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
   background:var(--bg);
   color:var(--text);
+  padding-bottom:92px;
   -webkit-font-smoothing:antialiased;
   -moz-osx-font-smoothing:grayscale;
-  padding-bottom:92px; /* sticky CTA space */
 }
-
 a{color:inherit;text-decoration:none}
-img{max-width:100%;height:auto;display:block}
-.container{max-width:1180px;margin:0 auto;padding:0 20px}
+.container{max-width:1200px;margin:0 auto;padding:0 18px}
+@media(min-width:768px){ .container{padding:0 40px} }
 
 /* =========================
-   HEADER (pro, clean)
+   NEW HEADER (compact + pro)
    ========================= */
-.topbar{
-  position:sticky;top:0;z-index:999;
-  background:rgba(255,255,255,.92);
-  backdrop-filter:saturate(180%) blur(18px);
-  border-bottom:1px solid var(--line);
+.header{
+  position:sticky; top:0; z-index:999;
+  background:rgba(15,15,16,.94);
+  backdrop-filter:saturate(160%) blur(14px);
+  border-bottom:1px solid rgba(255,255,255,.08);
 }
-.topbar .row{
-  display:flex;align-items:center;justify-content:space-between;
-  gap:14px;
-  padding:12px 0;
+.header .row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:10px 0;
 }
 .brand{
-  display:flex;align-items:center;gap:10px;
+  display:flex; align-items:center; gap:10px;
   min-width:0;
 }
-.brand .logo{
-  height:34px;width:auto;
-  filter:drop-shadow(0 2px 8px rgba(0,0,0,.10));
+.brand img{
+  height:24px;
+  width:auto;
+  display:block;
+  filter:drop-shadow(0 2px 10px rgba(0,0,0,.35));
 }
-.brand .wordmark{
-  display:flex;flex-direction:column;line-height:1.05;min-width:0;
+.brand .txt{
+  display:flex; flex-direction:column;
+  line-height:1.05;
+  min-width:0;
 }
-.brand .wordmark .name{
-  font-weight:900;
+.brand .txt .name{
+  font-weight:950;
   letter-spacing:.10em;
   text-transform:uppercase;
-  font-size:13px;
-  color:var(--text);
+  font-size:12px;
+  color:#fff;
   white-space:nowrap;
 }
-.brand .wordmark .tag{
-  font-size:12px;
-  color:var(--muted);
-  font-weight:700;
+.brand .txt .tag{
+  font-size:11px;
+  color:rgba(255,255,255,.72);
+  font-weight:750;
   white-space:nowrap;
 }
 .nav{
-  display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
 }
-.pill{
-  font-size:13px;font-weight:800;
-  padding:9px 14px;border-radius:999px;
-  color:var(--text2);
-  border:1px solid transparent;
-  transition:background .2s ease, border-color .2s ease, color .2s ease;
+.nav a{
+  font-size:12px;
+  font-weight:850;
+  padding:8px 10px;
+  border-radius:999px;
+  color:rgba(255,255,255,.85);
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(255,255,255,.04);
+  transition:transform .18s ease, background .18s ease, border-color .18s ease;
 }
-.pill:hover{
-  background:rgba(253,184,19,.10);
-  border-color:rgba(253,184,19,.22);
-  color:var(--text);
+.nav a:hover{
+  background:rgba(253,184,19,.14);
+  border-color:rgba(253,184,19,.25);
+  transform:translateY(-1px);
+}
+@media(max-width:420px){
+  .brand .txt .tag{display:none}
+  .nav a{padding:7px 9px}
 }
 
 /* =========================
    HERO
    ========================= */
 .hero{
-  position:relative;
-  overflow:hidden;
-  padding:64px 0 42px;
   background:linear-gradient(135deg,var(--yellow) 0%,var(--yellow-dark) 100%);
   color:#fff;
+  padding:52px 0 30px;
+  position:relative;
+  overflow:hidden;
 }
 .hero::before{
   content:'';
   position:absolute;inset:0;
   background:
-    radial-gradient(circle at 18% 10%, rgba(255,255,255,.18) 0%, rgba(255,255,255,0) 55%),
-    radial-gradient(circle at 82% 28%, rgba(255,255,255,.12) 0%, rgba(255,255,255,0) 60%),
-    linear-gradient(180deg, rgba(0,0,0,.06), rgba(0,0,0,0));
-  opacity:1;
+    radial-gradient(circle at 20% 15%, rgba(255,255,255,.18) 0%, rgba(255,255,255,0) 55%),
+    radial-gradient(circle at 78% 28%, rgba(255,255,255,.10) 0%, rgba(255,255,255,0) 60%);
+  opacity:.95;
 }
 .hero .grid{
-  position:relative;z-index:1;
   display:grid;
   grid-template-columns:1fr;
-  gap:22px;
-  align-items:start;
+  gap:18px;
+  align-items:center;
+  position:relative;
+  z-index:1;
 }
 .hero h1{
   margin:0;
+  font-size:28px;
   font-weight:950;
+  line-height:1.18;
   letter-spacing:-.03em;
-  line-height:1.15;
-  font-size:30px;
+  text-wrap:balance;
 }
 .hero p{
   margin:14px 0 0;
-  font-size:16px;
-  line-height:1.7;
+  font-size:15.5px;
   opacity:.95;
-  max-width:60ch;
+  line-height:1.65;
 }
-.meta{
+.hero .meta{
   margin-top:18px;
   display:flex;flex-wrap:wrap;gap:10px;
 }
 .badge{
-  display:inline-flex;align-items:center;gap:10px;
+  display:inline-flex;gap:10px;align-items:center;
   padding:10px 14px;
   background:rgba(255,255,255,.18);
   border:1px solid rgba(255,255,255,.22);
   border-radius:999px;
-  font-size:13.5px;
+  font-size:13px;
   font-weight:850;
   backdrop-filter:blur(10px);
 }
 
 /* =========================
-   CONTACT CARD (pro)
+   CONTACT CARD (no photo)
    ========================= */
 .profileCard{
-  background:rgba(255,255,255,.98);
-  color:var(--text);
-  border:1px solid rgba(255,255,255,.45);
+  background:var(--card);
+  border:1px solid rgba(0,0,0,.08);
   border-radius:22px;
   box-shadow:var(--shadow);
-  overflow:hidden;
+  padding:20px;
   position:relative;
+  overflow:hidden;
 }
 .profileCard::before{
   content:'';
   position:absolute;left:0;top:0;bottom:0;width:6px;
   background:linear-gradient(180deg,#111 0%, #2b2b2b 100%);
+  opacity:.95;
 }
-.profileCard .inner{
-  padding:22px 22px 18px;
+.profileCard::after{
+  content:'';
+  position:absolute;right:-90px;top:-90px;width:210px;height:210px;
+  background:radial-gradient(circle, rgba(253,184,19,.18) 0%, rgba(253,184,19,0) 62%);
+  pointer-events:none;
 }
+
 .profileTop{
-  display:flex;gap:14px;align-items:center;
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+  position:relative;z-index:1;
+  padding-left:8px;
 }
-.avatar{
-  width:86px;height:86px;border-radius:18px;
-  overflow:hidden;flex-shrink:0;
-  border:2px solid rgba(253,184,19,.75);
-  background:#f2f2f2;
-  box-shadow:0 10px 18px rgba(0,0,0,.10);
+.nameBlock{
+  flex:1;
+  min-width:0;
 }
-.avatar img{width:100%;height:100%;object-fit:cover}
-.profileInfo{min-width:0}
-.profileInfo h2{
+.nameBlock h2{
   margin:0;
   font-size:20px;
   font-weight:950;
   letter-spacing:-.02em;
+  color:#0f0f0f;
 }
-.profileInfo .role{
+.nameBlock .role{
   margin:7px 0 0;
-  font-weight:850;
   color:#111;
+  font-weight:850;
   font-size:14.5px;
 }
-.profileInfo .small{
+.nameBlock .small{
   margin:7px 0 0;
   color:var(--muted);
   font-size:13.5px;
   line-height:1.45;
 }
+
 .actions{
   margin-top:16px;
   display:grid;
   grid-template-columns:1fr;
   gap:10px;
+  position:relative;z-index:1;
+  padding-left:8px;
 }
+
 .btn{
   display:inline-flex;align-items:center;justify-content:center;gap:10px;
   padding:14px 16px;
   border-radius:14px;
   border:1px solid rgba(0,0,0,.10);
+  background:#111;
+  color:#fff;
   font-weight:900;
   font-size:14.5px;
   transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
+  box-shadow:0 8px 18px rgba(0,0,0,.14);
 }
+.btn:hover{transform:translateY(-1px);box-shadow:0 12px 26px rgba(0,0,0,.20)}
 .btn:active{transform:translateY(0)}
-.btn .icon{width:18px;height:18px;display:inline-block}
-.btn .icon svg{width:18px;height:18px;fill:currentColor}
-.btn.primary{
+.btn.secondary{
+  background:#f4f4f4;
+  color:#111;
+  border:1px solid rgba(0,0,0,.10);
+  box-shadow:0 4px 12px rgba(0,0,0,.08);
+}
+.btn.secondary:hover{background:#fff;box-shadow:0 10px 22px rgba(0,0,0,.12)}
+.btn.primaryYellow{
   background:linear-gradient(135deg,var(--yellow),var(--yellow-dark));
+  border:1px solid rgba(0,0,0,.10);
   color:#111;
   box-shadow:0 10px 20px rgba(253,184,19,.22);
 }
-.btn.primary:hover{transform:translateY(-1px);box-shadow:0 14px 28px rgba(253,184,19,.28)}
-.btn.secondary{
-  background:#f3f3f3;
-  color:#111;
-  box-shadow:0 4px 12px rgba(0,0,0,.08);
+.btn.primaryYellow:hover{box-shadow:0 14px 28px rgba(253,184,19,.28)}
+.btn.wa{
+  background:#25D366;
+  color:#fff;
+  border:1px solid rgba(0,0,0,.08);
+  box-shadow:0 10px 20px rgba(37,211,102,.20);
 }
-.btn.secondary:hover{transform:translateY(-1px);box-shadow:0 12px 22px rgba(0,0,0,.12);background:#fff}
+.btn.wa:hover{box-shadow:0 14px 28px rgba(37,211,102,.26)}
+.btn .icon{width:18px;height:18px;display:inline-block}
+.btn .icon svg{width:18px;height:18px;fill:currentColor}
 
 /* =========================
    SECTIONS
    ========================= */
-.section{padding:64px 0}
+.section{padding:56px 0}
 .section h3{
   margin:0;
   font-size:26px;
   font-weight:950;
   letter-spacing:-.03em;
 }
-.sub{
+.section .sub{
   margin:12px 0 0;
-  color:var(--text2);
+  color:var(--text-secondary);
   font-size:16px;
-  line-height:1.75;
+  line-height:1.7;
   max-width:920px;
 }
 
-/* Cards grid */
-.cards{
-  margin-top:26px;
-  display:grid;
-  grid-template-columns:1fr;
-  gap:16px;
-}
+.cards{margin-top:26px;display:grid;grid-template-columns:1fr;gap:16px}
 .card{
   background:var(--card);
   border:1px solid var(--line);
@@ -259,23 +300,20 @@ img{max-width:100%;height:auto;display:block}
   padding:22px;
   transition:transform .22s ease, box-shadow .22s ease, border-color .22s ease;
 }
-.card:hover{transform:translateY(-3px);box-shadow:var(--shadow2);border-color:rgba(253,184,19,.35)}
-.card h4{margin:0 0 10px;font-size:18px;font-weight:950}
-.card p{margin:0;color:var(--text2);font-size:15px;line-height:1.7}
-.card a.link{display:inline-flex;align-items:center;gap:8px;margin-top:12px;font-weight:950}
+.card:hover{transform:translateY(-3px);box-shadow:var(--shadow-hover);border-color:rgba(253,184,19,.35)}
+.card h4{margin:0 0 10px;font-size:18px;font-weight:900}
+.card p{margin:0;color:var(--text-secondary);font-size:15px;line-height:1.7}
+.card a.link{display:inline-flex;align-items:center;gap:8px;margin-top:14px;font-weight:900}
 .card a.link::after{content:'→';font-size:18px}
 
-/* List */
 .list{margin:22px 0 0;padding:0;list-style:none;display:grid;gap:14px}
 .list li{
-  display:flex;gap:14px;
-  padding:18px;
-  background:#fff;
-  border:1px solid var(--line);
+  display:flex;gap:14px;padding:18px;
+  border:1px solid var(--line);background:var(--card);
   border-radius:16px;
-  transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  transition:border-color .18s ease, box-shadow .18s ease, transform .18s ease;
 }
-.list li:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,.06);border-color:rgba(253,184,19,.35)}
+.list li:hover{border-color:rgba(253,184,19,.35);box-shadow:0 4px 16px rgba(0,0,0,.06);transform:translateY(-1px)}
 .dot{
   width:12px;height:12px;border-radius:50%;
   background:var(--yellow);
@@ -283,61 +321,69 @@ img{max-width:100%;height:auto;display:block}
   box-shadow:0 0 0 4px rgba(253,184,19,.15);
 }
 .list b{display:block;font-size:16px;font-weight:950;margin-bottom:4px}
-.list span{display:block;color:var(--text2);font-size:14px;line-height:1.6}
+.list span{display:block;color:var(--text-secondary);font-size:14px;line-height:1.6}
 
 /* Partners */
-.partners{
-  margin-top:26px;
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:16px;
-}
+.partnersGrid{margin-top:26px;display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
 .partner{
-  background:#fff;
+  background:var(--card);
   border:1px solid var(--line);
   border-radius:18px;
   padding:26px 18px;
   text-align:center;
-  min-height:150px;
   transition:transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+  min-height:150px;
 }
-.partner:hover{transform:translateY(-4px);box-shadow:var(--shadow2);border-color:rgba(253,184,19,.45)}
+.partner:hover{transform:translateY(-4px);box-shadow:var(--shadow-hover);border-color:rgba(253,184,19,.45)}
 .partner .logo-wrapper{height:84px;display:flex;align-items:center;justify-content:center;margin-bottom:14px}
-.partner img{max-width:150px;max-height:72px;object-fit:contain;opacity:.8;filter:grayscale(100%)}
+.partner img{max-width:150px;max-height:72px;object-fit:contain;opacity:.78;filter:grayscale(100%)}
 .partner:hover img{opacity:1;filter:grayscale(0%)}
 .partner .pname{font-size:16px;font-weight:950;margin-bottom:6px}
-.partner .pcountry{font-size:13px;color:var(--muted);font-weight:850}
+.partner .pcountry{font-size:13px;color:var(--muted);font-weight:800}
 
-/* Map section */
-.mapWrap{
+/* Branches map */
+.mapCard{
   margin-top:22px;
-  background:#fff;
-  border:1px solid var(--line);
   border-radius:20px;
   overflow:hidden;
+  border:1px solid var(--line);
   box-shadow:var(--shadow);
+  background:#fff;
 }
-.mapHeader{
+.mapTop{
   padding:16px 18px;
   border-bottom:1px solid var(--line);
-  display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
 }
-.mapHeader b{font-weight:950}
-.mapHeader span{color:var(--muted);font-size:13px;font-weight:800}
-.mapBody{padding:18px}
-.mapBody img{border-radius:14px;border:1px solid rgba(0,0,0,.06)}
+.legend{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  align-items:center;
+  color:var(--muted);
+  font-size:12.5px;
+  font-weight:800;
+}
+.legend .item{display:inline-flex;align-items:center;gap:8px}
+.legend .swatch{width:10px;height:10px;border-radius:50%}
+#branchesMap{height:420px}
+@media(max-width:767px){ #branchesMap{height:360px} }
 
 /* Form */
 .formWrap{
-  margin-top:26px;
-  background:#fff;
+  margin-top:28px;
+  background:var(--card);
   border:1px solid var(--line);
   border-radius:22px;
   padding:26px;
   box-shadow:var(--shadow);
 }
-.formGrid{display:grid;grid-template-columns:1fr;gap:14px}
-label{font-size:13px;color:var(--text2);font-weight:900;margin-bottom:8px;display:block}
+.formGrid{display:grid;grid-template-columns:1fr;gap:16px}
+label{font-size:13px;color:var(--text-secondary);font-weight:900;margin-bottom:8px;display:block}
 input,select,textarea{
   width:100%;
   padding:14px 16px;
@@ -355,11 +401,13 @@ input:focus,select:focus,textarea:focus{
 }
 textarea{min-height:120px;resize:vertical;line-height:1.6}
 .formActions{
-  display:flex;gap:12px;flex-wrap:wrap;
-  margin-top:16px;
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-top:16px
 }
 .note{
-  margin:14px 0 0;
+  margin:16px 0 0;
   color:var(--muted);
   font-size:14px;
   line-height:1.6;
@@ -378,7 +426,7 @@ textarea{min-height:120px;resize:vertical;line-height:1.6}
   text-align:center;
 }
 
-/* Floating WhatsApp */
+/* WhatsApp float */
 .wa-float{
   position:fixed;right:20px;bottom:112px;z-index:998;
   width:60px;height:60px;border-radius:50%;
@@ -390,7 +438,7 @@ textarea{min-height:120px;resize:vertical;line-height:1.6}
 .wa-float:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(37,211,102,.45)}
 .wa-float svg{width:28px;height:28px;fill:#fff}
 
-/* Sticky CTA */
+/* Sticky bar */
 .sticky{
   position:fixed;left:0;right:0;bottom:0;z-index:999;
   background:rgba(255,255,255,.95);
@@ -400,7 +448,7 @@ textarea{min-height:120px;resize:vertical;line-height:1.6}
   padding:12px 16px;
 }
 .sticky .wrap{
-  max-width:1180px;margin:auto;
+  max-width:1200px;margin:auto;
   display:flex;gap:12px;
 }
 .sticky a{
@@ -411,7 +459,7 @@ textarea{min-height:120px;resize:vertical;line-height:1.6}
   font-weight:950;
   font-size:15px;
   border:2px solid rgba(0,0,0,.08);
-  transition:transform .2s ease, box-shadow .2s ease;
+  transition:transform .2s ease, box-shadow .2s ease, background .2s ease, color .2s ease;
 }
 .sticky a.primary{
   background:#111;color:#fff;border-color:#111;
@@ -439,268 +487,299 @@ textarea{min-height:120px;resize:vertical;line-height:1.6}
   *{transition:none !important}
 }
 
-/* =========================
-   RESPONSIVE
-   ========================= */
+/* Responsive layout */
 @media(min-width:768px){
-  .container{padding:0 40px}
-  .hero{padding:76px 0 54px}
-  .hero .grid{grid-template-columns:1.35fr .65fr;gap:44px;align-items:center}
+  .hero{padding:72px 0 48px}
+  .hero .grid{grid-template-columns:1.35fr .65fr;gap:44px}
   .hero h1{font-size:44px}
   .hero p{font-size:18px}
-  .actions{grid-template-columns:repeat(3,1fr)}
+  .actions{grid-template-columns:repeat(2,1fr)}
   .cards{grid-template-columns:repeat(2,1fr)}
-  .partners{grid-template-columns:repeat(4,1fr)}
+  .partnersGrid{grid-template-columns:repeat(4,1fr)}
   .formGrid{grid-template-columns:repeat(2,1fr)}
   .formGrid .full{grid-column:1 / -1}
-  .section{padding:86px 0}
-}
-@media(max-width:767px){
-  .hero h1{font-size:26px}
-  .section h3{font-size:24px}
-  .brand .wordmark .tag{display:none}
-  .pill{padding:8px 12px}
+  .section{padding:84px 0}
 }
 </style>
 </head>
 
 <body>
 
-<!-- HEADER -->
-<header class="topbar">
+<!-- NEW HEADER -->
+<div class="header">
   <div class="container">
     <div class="row">
-      <a class="brand" href="#top" aria-label="ADAPTIV home">
-        <img class="logo" src="https://theadaptiv.com/assets/icons/logo-light.svg" alt="ADAPTIV logo">
-        <div class="wordmark">
+      <div class="brand">
+        <img src="https://theadaptiv.com/assets/icons/logo-light.svg" alt="ADAPTIV logo">
+        <div class="txt">
           <div class="name">ADAPTIV</div>
-          <div class="tag">Lean • Industry 4.0</div>
+          <div class="tag">Lean • Operations • Operational Solutions</div>
         </div>
-      </a>
+      </div>
 
-      <nav class="nav" aria-label="Primary">
-        <a class="pill" href="#about">About</a>
-        <a class="pill" href="#solutions">Solutions</a>
-        <a class="pill" href="#partners">Partners</a>
-        <a class="pill" href="#catalogs">Catalogs</a>
-        <a class="pill" href="#contact">Contact</a>
-      </nav>
+      <div class="nav" aria-label="Site navigation">
+        <a href="#about">About</a>
+        <a href="#industries">Industries</a>
+        <a href="#partners">Partners</a>
+        <a href="#branches">Branches</a>
+        <a href="#contact">Contact</a>
+      </div>
     </div>
   </div>
-</header>
-
-<main id="top">
-
-  <!-- HERO -->
-  <section class="hero">
-    <div class="container">
-      <div class="grid">
-
-        <div class="reveal">
-          <h1>ADAPTIV – Lean Manufacturing & Industry 4.0 Operational Solutions</h1>
-          <p>
-            ADAPTIV supports factories and industrial facilities with modular workstations, racking systems, material handling trolleys,
-            and visual management—built to reduce waste, improve flow, and enhance safety on the shopfloor.
-          </p>
-
-          <div class="meta">
-            <div class="badge"><span>⚙️ Modular & Non-welded</span></div>
-            <div class="badge"><span>📈 Productivity & 5S</span></div>
-            <div class="badge"><span>🦺 Safety & Ergonomics</span></div>
-            <div class="badge"><span>🏭 Manufacturing + Logistics</span></div>
-          </div>
-        </div>
-
-        <!-- CONTACT CARD -->
-        <aside class="profileCard reveal" aria-label="Contact card">
-          <div class="inner">
-            <div class="profileTop">
-              <div class="avatar">
-                <!-- UPDATED PROFILE IMAGE -->
-                <img src="https://www.genspark.ai/api/files/s/jcmjvYIn" alt="Swapnil Jagtap">
-              </div>
-              <div class="profileInfo">
-                <h2>Swapnil Jagtap</h2>
-                <div class="role">Sales Manager – ADAPTIV</div>
-                <div class="small">Lean Works Trading L.L.C – S.P.C</div>
-              </div>
-            </div>
-
-            <div class="actions">
-              <a class="btn primary" id="btnDownloadVcard" href="#" download="Swapnil_Jagtap_ADAPTIV.vcf">
-                <span class="icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-                </span>
-                Download vCard
-              </a>
-
-              <a class="btn secondary" href="mailto:swapnil.jagtap@theadaptiv.com">
-                <span class="icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/></svg>
-                </span>
-                Email Me
-              </a>
-
-              <a class="btn secondary" href="#contact">
-                <span class="icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg>
-                </span>
-                Request Site Visit
-              </a>
-            </div>
-          </div>
-        </aside>
-
-      </div>
-    </div>
-  </section>
-
-  <!-- ABOUT -->
-  <section class="section" id="about">
-    <div class="container reveal">
-      <h3>About ADAPTIV</h3>
-      <p class="sub">
-        ADAPTIV provides modular Lean Manufacturing and Industry 4.0 solutions that help production and operations teams improve
-        productivity, safety, and material flow—without heavy civil work or long downtime. We focus on fast deployment, scalability,
-        and easy reconfiguration as your processes evolve.
-      </p>
-
-      <ul class="list">
-        <li><div class="dot"></div><div><b>How we work</b><span>Site assessment → conceptual design → proposal → implementation support → continuous optimization</span></div></li>
-        <li><div class="dot"></div><div><b>Typical outcomes</b><span>Reduced operator motion, safer handling, cleaner flow, stronger traceability & visual control</span></div></li>
-        <li><div class="dot"></div><div><b>What we deliver</b><span>Workstations, FIFO racks, WIP systems, trolleys, kitting, visual management & shopfloor control</span></div></li>
-      </ul>
-    </div>
-  </section>
-
-  <!-- SOLUTIONS -->
-  <section class="section" id="solutions">
-    <div class="container reveal">
-      <h3>ADAPTIV Solutions</h3>
-      <p class="sub">Practical improvements that enhance flow, safety, and productivity—without extended downtime.</p>
-
-      <div class="cards">
-        <div class="card"><h4>ADAPTIV. SUPPLY</h4><p>Premium pipe racking systems and lean materials with timely delivery and traceability across the region.</p></div>
-        <div class="card"><h4>ADAPTIV. ENGINEERING</h4><p>Custom designs and layouts tailored to your operational requirements and improvement targets.</p></div>
-        <div class="card"><h4>ADAPTIV. IMPLEMENTATION</h4><p>Professional installation and project management from concept to completion with minimal disruption.</p></div>
-        <div class="card"><h4>ADAPTIV. SERVICES</h4><p>Consulting, training, maintenance, and continuous optimization to sustain improvements and ROI.</p></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- PARTNERS + MAP -->
-  <section class="section" id="partners">
-    <div class="container reveal">
-      <h3>Global Partners</h3>
-      <p class="sub">Collaborating with world-leading manufacturers to deliver best-in-class lean manufacturing solutions.</p>
-
-      <div class="partners">
-        <div class="partner"><div class="logo-wrapper"><img src="https://theadaptiv.com/files/partners/13e2ff__FILENAME__p2.png" alt="G.S.ACE"></div><div class="pname">G.S.ACE</div><div class="pcountry">🇰🇷 SOUTH KOREA</div></div>
-        <div class="partner"><div class="logo-wrapper"><img src="https://media.licdn.com/dms/image/v2/D4E0BAQG7fwflqOarwg/company-logo_200_200/company-logo_200_200/0/1663912658639/beewatecgroup_logo?e=2147483647&v=beta&t=2QBamejfuw6QrRURueLnPnO80dqy9CfPYPBAUkOCliQ" alt="BEEWATEC"></div><div class="pname">BEEWATEC</div><div class="pcountry">🇩🇪 GERMANY</div></div>
-        <div class="partner"><div class="logo-wrapper"><img src="https://www.fath24.com/media/bf/b0/5e/1736982639/FATH-Logo-2022.png?ts=1736982639" alt="FATH"></div><div class="pname">FATH</div><div class="pcountry">🇩🇪 GERMANY</div></div>
-        <div class="partner"><div class="logo-wrapper"><img src="https://cdn.sanity.io/images/loal7n8w/business-norway-prod/cd717ee4c58fe57c4592914e7dade473fd32ffaa-1024x576.jpg?auto=format&w=1920&q=75" alt="WHEEL.ME"></div><div class="pname">WHEEL.ME</div><div class="pcountry">🇳🇴 NORWAY</div></div>
-      </div>
-
-      <!-- UPDATED MENA MAP -->
-      <div class="mapWrap" style="margin-top:26px;">
-        <div class="mapHeader">
-          <b>ADAPTIV MENA Presence</b>
-          <span>Regional support across GCC & wider MENA</span>
-        </div>
-        <div class="mapBody">
-          <img src="https://www.genspark.ai/api/files/s/k7snnZvx" alt="ADAPTIV MENA Presence Map">
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CATALOGS -->
-  <section class="section" id="catalogs">
-    <div class="container reveal">
-      <h3>Resources & Catalogs</h3>
-      <p class="sub">Technical documentation and catalogs you can share internally before scheduling a site assessment.</p>
-
-      <div class="cards">
-        <div class="card"><h4>Pipe Racking Catalogue</h4><p style="margin-bottom:10px;font-size:13px;color:var(--muted)">G.S ACE Systems</p><a class="link" href="https://qrco.de/bdio7X" target="_blank" rel="noopener">View Catalogue</a></div>
-        <div class="card"><h4>Lean Manufacturing Catalogue</h4><p style="margin-bottom:10px;font-size:13px;color:var(--muted)">Complete Solutions</p><a class="link" href="https://qrco.de/bdrzXv" target="_blank" rel="noopener">View Catalogue</a></div>
-        <div class="card"><h4>Engineering Components</h4><p style="margin-bottom:10px;font-size:13px;color:var(--muted)">FATH Systems</p><a class="link" href="http://www.ec.fath24.com/" target="_blank" rel="noopener">Browse Online</a></div>
-        <div class="card"><h4>Visual Management Systems</h4><p style="margin-bottom:10px;font-size:13px;color:var(--muted)">FATH Solutions</p><a class="link" href="http://www.si.fath24.com/" target="_blank" rel="noopener">Browse Online</a></div>
-        <div class="card"><h4>Project Portfolio</h4><p style="margin-bottom:10px;font-size:13px;color:var(--muted)">Case Studies</p><a class="link" href="https://theadaptiv.com/projects" target="_blank" rel="noopener">View Projects</a></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CONTACT -->
-  <section class="section" id="contact">
-    <div class="container reveal">
-      <h3>Let’s Connect</h3>
-      <p class="sub">Share your requirement and I’ll respond with the fastest next step—call, Microsoft Teams meeting, or on-site visit.</p>
-
-      <div class="formWrap">
-        <form id="leadForm">
-          <div class="formGrid">
-            <div><label>Your Name *</label><input id="fName" type="text" placeholder="Full name" required></div>
-            <div><label>Company *</label><input id="fCompany" type="text" placeholder="Company name" required></div>
-            <div><label>Mobile / WhatsApp *</label><input id="fPhone" type="tel" placeholder="+971…" required></div>
-            <div><label>Email</label><input id="fEmail" type="email" placeholder="name@company.com"></div>
-
-            <div class="full">
-              <label>Industry</label>
-              <select id="fIndustry">
-                <option>Electrical & Switchgear</option>
-                <option>Automotive</option>
-                <option>Defense</option>
-                <option>Logistics / 3PL</option>
-                <option>Food & Beverage</option>
-                <option>Chemicals / Paints</option>
-                <option>Oil & Gas</option>
-                <option>Engineering / Fabrication</option>
-                <option>Other</option>
-              </select>
-            </div>
-
-            <div class="full">
-              <label>Requirement / Pain Point</label>
-              <textarea id="fMsg" placeholder="Example: FIFO racks, kitting trolley, workstation improvements, visual management systems, etc."></textarea>
-            </div>
-          </div>
-
-          <div class="formActions">
-            <button type="button" class="btn primary" id="btnWhatsAppLead">
-              <span class="icon" aria-hidden="true">
-                <svg viewBox="0 0 32 32"><path d="M19.11 17.39c-.26-.13-1.53-.75-1.77-.84-.24-.09-.41-.13-.58.13-.17.26-.66.84-.81 1.01-.15.17-.3.19-.56.06-.26-.13-1.11-.41-2.11-1.31-.78-.69-1.31-1.54-1.47-1.8-.15-.26-.02-.4.11-.53.12-.12.26-.3.39-.45.13-.15.17-.26.26-.43.09-.17.04-.32-.02-.45-.06-.13-.58-1.39-.79-1.9-.21-.5-.42-.43-.58-.44-.15-.01-.32-.01-.49-.01s-.45.06-.69.32c-.24.26-.9.88-.9 2.14 0 1.26.93 2.48 1.06 2.65.13.17 1.83 2.79 4.43 3.91.62.27 1.11.43 1.49.55.62.2 1.19.17 1.64.1.5-.08 1.53-.62 1.75-1.22.22-.6.22-1.12.15-1.22-.06-.10-.24-.17-.5-.3z"/><path d="M26.67 5.33A14.9 14.9 0 0 0 16.06 1C7.98 1 1.4 7.58 1.4 15.66c0 2.58.67 5.1 1.95 7.33L1 31l8.2-2.25a14.6 14.6 0 0 0 6.86 1.74h.01c8.08 0 14.66-6.58 14.66-14.66 0-3.92-1.53-7.6-4.06-10.5zm-10.6 22.66h-.01a12.1 12.1 0 0 1-6.16-1.69l-.44-.26-4.87 1.34 1.3-4.74-.29-.49a12.2 12.1 0 0 1-1.87-6.5c0-6.71 5.46-12.16 12.18-12.16 3.26 0 6.33 1.27 8.63 3.57a12.1 12.1 0 0 1 3.56 8.6c0 6.71-5.46 12.33-12.03 12.33z"/></svg>
-              </span>
-              Send via WhatsApp
-            </button>
-
-            <a class="btn secondary" id="btnEmailLead" href="mailto:swapnil.jagtap@theadaptiv.com">
-              <span class="icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/></svg>
-              </span>
-              Send via Email
-            </a>
-
-            <a class="btn secondary" id="teamsOutlookLink" target="_blank" rel="noopener">
-              <span class="icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24"><path d="M15 3H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm0 16H5V5h10v14z"/><path d="M21 7h-3v10h3l2-2V9l-2-2z"/></svg>
-              </span>
-              Schedule Teams Meeting
-            </a>
-          </div>
-
-          <p class="note"><strong>💡 Teams Meeting:</strong> This opens Outlook with my email prefilled. Choose your time, enable <b>Teams meeting</b>, and send the invite.</p>
-        </form>
-      </div>
-    </div>
-  </section>
-
-</main>
-
-<div class="container footer reveal">
-  <strong>ADAPTIV</strong> — Lean | Efficient | Flexible | Secure Operations
 </div>
 
-<!-- Floating WhatsApp -->
+<!-- HERO -->
+<section class="hero" id="top">
+  <div class="container">
+    <div class="grid">
+      <div class="reveal">
+        <h1>ADAPTIV – Lean Manufacturing & Operations Operational Solutions</h1>
+        <p>
+          ADAPTIV helps industrial teams reduce waste, improve material flow, and elevate safety using modular,
+          scalable systems—workstations, racking, trolleys, kitting, and visual management built for fast deployment.
+        </p>
+
+        <div class="meta">
+          <div class="badge"><span>⚙️ Modular & Non-welded</span></div>
+          <div class="badge"><span>📈 Productivity & 5S</span></div>
+          <div class="badge"><span>🦺 Safety & Ergonomics</span></div>
+          <div class="badge"><span>🏭 Manufacturing + Logistics</span></div>
+        </div>
+      </div>
+
+      <!-- CONTACT CARD (NO PHOTO) -->
+      <div class="profileCard reveal" aria-label="Contact card">
+        <div class="profileTop">
+          <div class="nameBlock">
+            <h2>Swapnil Jagtap</h2>
+            <div class="role">Sales Manager – ADAPTIV</div>
+            <div class="small">Lean Works Trading L.L.C – S.P.C</div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <a class="btn primaryYellow" id="btnDownloadVcard" href="#" download="Swapnil_Jagtap_ADAPTIV.vcf">
+            <span class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+            </span>
+            Save Contact
+          </a>
+
+          <a class="btn wa" id="btnWhatsAppQuick" href="#" target="_blank" rel="noopener">
+            <span class="icon" aria-hidden="true">
+              <svg viewBox="0 0 32 32"><path d="M19.11 17.39c-.26-.13-1.53-.75-1.77-.84-.24-.09-.41-.13-.58.13-.17.26-.66.84-.81 1.01-.15.17-.3.19-.56.06-.26-.13-1.11-.41-2.11-1.31-.78-.69-1.31-1.54-1.47-1.8-.15-.26-.02-.4.11-.53.12-.12.26-.3.39-.45.13-.15.17-.26.26-.43.09-.17.04-.32-.02-.45-.06-.13-.58-1.39-.79-1.9-.21-.5-.42-.43-.58-.44-.15-.01-.32-.01-.49-.01s-.45.06-.69.32c-.24.26-.9.88-.9 2.14 0 1.26.93 2.48 1.06 2.65.13.17 1.83 2.79 4.43 3.91.62.27 1.11.43 1.49.55.62.2 1.19.17 1.64.1.5-.08 1.53-.62 1.75-1.22.22-.6.22-1.12.15-1.22-.06-.10-.24-.17-.5-.3z"/><path d="M26.67 5.33A14.9 14.9 0 0 0 16.06 1C7.98 1 1.4 7.58 1.4 15.66c0 2.58.67 5.1 1.95 7.33L1 31l8.2-2.25a14.6 14.6 0 0 0 6.86 1.74h.01c8.08 0 14.66-6.58 14.66-14.66 0-3.92-1.53-7.6-4.06-10.5zm-10.6 22.66h-.01a12.1 12.1 0 0 1-6.16-1.69l-.44-.26-4.87 1.34 1.3-4.74-.29-.49a12.2 12.1 0 0 1-1.87-6.5c0-6.71 5.46-12.16 12.18-12.16 3.26 0 6.33 1.27 8.63 3.57a12.1 12.1 0 0 1 3.56 8.6c0 6.71-5.46 12.33-12.03 12.33z"/></svg>
+            </span>
+            WhatsApp
+          </a>
+
+          <a class="btn secondary" href="mailto:swapnil.jagtap@theadaptiv.com">
+            <span class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/></svg>
+            </span>
+            Email
+          </a>
+
+          <a class="btn secondary" id="teamsOutlookLink" target="_blank" rel="noopener">
+            <span class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M15 3H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm0 16H5V5h10v14z"/><path d="M21 7h-3v10h3l2-2V9l-2-2z"/></svg>
+            </span>
+            Microsoft Teams
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="section" id="about">
+  <div class="container reveal">
+    <h3>About ADAPTIV</h3>
+    <p class="sub">
+      ADAPTIV provides modular Lean Manufacturing and Operations solutions that improve productivity, safety, and
+      material flow across industrial operations—without heavy civil work or long downtime.
+    </p>
+
+    <ul class="list">
+      <li><div class="dot"></div><div><b>Our delivery method</b><span>Site assessment → conceptual design → proposal → implementation support → continuous optimization</span></div></li>
+      <li><div class="dot"></div><div><b>Key outcomes</b><span>Reduced motion & waste, safer handling, better flow, stronger traceability and visual control</span></div></li>
+      <li><div class="dot"></div><div><b>What we build</b><span>Workstations, FIFO racks, WIP systems, trolleys, kitting, visual management & shopfloor control</span></div></li>
+    </ul>
+  </div>
+</section>
+
+<!-- INDUSTRIES -->
+<section class="section" id="industries">
+  <div class="container reveal">
+    <h3>Industry Segments</h3>
+    <p class="sub">We support operations teams across multiple sectors with scalable shopfloor and logistics systems.</p>
+
+    <div class="cards">
+      <div class="card"><h4>Electrical & Switchgear</h4><p>Assembly workstations, enclosure handling trolleys, FIFO/WIP control, kitting, ESD-ready setups.</p></div>
+      <div class="card"><h4>Oil & Gas</h4><p>Heavy-duty workstations, material flow racks, tool boards, staging & controlled WIP for fabrication/maintenance.</p></div>
+      <div class="card"><h4>Automotive & Defense</h4><p>Cell layouts, kitting, tugger-ready trolleys, line-side supply, traceability and visual control.</p></div>
+      <div class="card"><h4>Logistics & 3PL</h4><p>Picking carts, flow racks, packing benches, staging lanes, visual management and 5S systems.</p></div>
+      <div class="card"><h4>Food, Chemicals & Paints</h4><p>Clean, organized material handling, safe storage, FIFO, batching support, and visual standards on the floor.</p></div>
+      <div class="card"><h4>Engineering & Fabrication</h4><p>Modular benches, inspection stations, component racks, tool organization, and fast reconfiguration.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- PARTNERS -->
+<section class="section" id="partners">
+  <div class="container reveal">
+    <h3>Our Technology & Solutions Partners</h3>
+    <p class="sub">We collaborate with global manufacturers to deliver reliable, fast-to-deploy operational solutions.</p>
+
+    <div class="partnersGrid">
+      <div class="partner">
+        <div class="logo-wrapper">
+          <img src="https://theadaptiv.com/files/partners/13e2ff__FILENAME__p2.png" alt="G.S.ACE">
+        </div>
+        <div class="pname">G.S.ACE</div>
+        <div class="pcountry">🇰🇷 SOUTH KOREA</div>
+      </div>
+
+      <div class="partner">
+        <div class="logo-wrapper">
+          <img src="https://media.licdn.com/dms/image/v2/D4E0BAQG7fwflqOarwg/company-logo_200_200/company-logo_200_200/0/1663912658639/beewatecgroup_logo?e=2147483647&v=beta&t=2QBamejfuw6QrRURueLnPnO80dqy9CfPYPBAUkOCliQ" alt="BEEWATEC">
+        </div>
+        <div class="pname">BEEWATEC</div>
+        <div class="pcountry">🇩🇪 GERMANY</div>
+      </div>
+
+      <div class="partner">
+        <div class="logo-wrapper">
+          <img src="https://www.fath24.com/media/bf/b0/5e/1736982639/FATH-Logo-2022.png?ts=1736982639" alt="FATH">
+        </div>
+        <div class="pname">FATH</div>
+        <div class="pcountry">🇩🇪 GERMANY</div>
+      </div>
+
+      <div class="partner">
+        <div class="logo-wrapper">
+          <img src="https://cdn.sanity.io/images/loal7n8w/business-norway-prod/cd717ee4c58fe57c4592914e7dade473fd32ffaa-1024x576.jpg?auto=format&w=1920&q=75" alt="WHEEL.ME">
+        </div>
+        <div class="pname">WHEEL.ME</div>
+        <div class="pcountry">🇳🇴 NORWAY</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BRANCHES -->
+<section class="section" id="branches">
+  <div class="container reveal">
+    <h3>Branches</h3>
+    <p class="sub">Our presence across the Middle East supports fast delivery, engineering, and local project execution.</p>
+
+    <div class="cards">
+      <div class="card">
+        <h4>Headquarters</h4>
+        <p>Riyadh, Saudi Arabia</p>
+      </div>
+      <div class="card">
+        <h4>Central Warehouse</h4>
+        <p>Tabouk, Saudi Arabia</p>
+      </div>
+      <div class="card">
+        <h4>Factory Locations</h4>
+        <p>Saudi Arabia: Riyadh, Dammam<br>Egypt: Cairo</p>
+      </div>
+      <div class="card">
+        <h4>Regional Sales Offices</h4>
+        <p>Cairo (Egypt) • Riyadh (KSA) • Dammam (KSA) • Jeddah (KSA) • Amman (Jordan) • Abu Dhabi (UAE)</p>
+      </div>
+      <div class="card">
+        <h4>Engineering Design Centre</h4>
+        <p>Amman, Jordan</p>
+      </div>
+    </div>
+
+    <!-- Interactive Map (OpenStreetMap) -->
+    <div class="mapCard" style="margin-top:22px;">
+      <div class="mapTop">
+        <div style="font-weight:950;color:#111;">ADAPTIV Locations Map</div>
+        <div class="legend" aria-label="Map legend">
+          <span class="item"><span class="swatch" style="background:#111"></span>Headquarters</span>
+          <span class="item"><span class="swatch" style="background:#25D366"></span>Warehouse</span>
+          <span class="item"><span class="swatch" style="background:#FDB813"></span>Factory</span>
+          <span class="item"><span class="swatch" style="background:#2D6CDF"></span>Sales Office</span>
+          <span class="item"><span class="swatch" style="background:#8E44AD"></span>Engineering Design</span>
+        </div>
+      </div>
+      <div id="branchesMap" aria-label="Branches map"></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="section" id="contact">
+  <div class="container reveal">
+    <h3>Contact</h3>
+    <p class="sub">Share your requirement and I’ll respond with the fastest next step—call, Teams meeting, or on-site visit.</p>
+
+    <div class="formWrap">
+      <form id="leadForm">
+        <div class="formGrid">
+          <div><label>Your Name *</label><input id="fName" type="text" placeholder="Full name" required></div>
+          <div><label>Company *</label><input id="fCompany" type="text" placeholder="Company name" required></div>
+          <div><label>Mobile / WhatsApp *</label><input id="fPhone" type="tel" placeholder="+971…" required></div>
+          <div><label>Email</label><input id="fEmail" type="email" placeholder="name@company.com"></div>
+
+          <div class="full">
+            <label>Industry</label>
+            <select id="fIndustry">
+              <option>Electrical & Switchgear</option>
+              <option>Automotive & Defense</option>
+              <option>Logistics / 3PL</option>
+              <option>Food / Chemicals / Paints</option>
+              <option>Oil & Gas</option>
+              <option>Engineering / Fabrication</option>
+              <option>Other</option>
+            </select>
+          </div>
+
+          <div class="full">
+            <label>Requirement / Pain Point</label>
+            <textarea id="fMsg" placeholder="Example: FIFO racks, kitting trolley, workstation improvements, visual management systems, etc."></textarea>
+          </div>
+        </div>
+
+        <div class="formActions">
+          <button type="button" class="btn wa" id="btnWhatsAppLead">
+            <span class="icon" aria-hidden="true">
+              <svg viewBox="0 0 32 32"><path d="M19.11 17.39c-.26-.13-1.53-.75-1.77-.84-.24-.09-.41-.13-.58.13-.17.26-.66.84-.81 1.01-.15.17-.3.19-.56.06-.26-.13-1.11-.41-2.11-1.31-.78-.69-1.31-1.54-1.47-1.8-.15-.26-.02-.4.11-.53.12-.12.26-.3.39-.45.13-.15.17-.26.26-.43.09-.17.04-.32-.02-.45-.06-.13-.58-1.39-.79-1.9-.21-.5-.42-.43-.58-.44-.15-.01-.32-.01-.49-.01s-.45.06-.69.32c-.24.26-.9.88-.9 2.14 0 1.26.93 2.48 1.06 2.65.13.17 1.83 2.79 4.43 3.91.62.27 1.11.43 1.49.55.62.2 1.19.17 1.64.1.5-.08 1.53-.62 1.75-1.22.22-.6.22-1.12.15-1.22-.06-.10-.24-.17-.5-.3z"/><path d="M26.67 5.33A14.9 14.9 0 0 0 16.06 1C7.98 1 1.4 7.58 1.4 15.66c0 2.58.67 5.1 1.95 7.33L1 31l8.2-2.25a14.6 14.6 0 0 0 6.86 1.74h.01c8.08 0 14.66-6.58 14.66-14.66 0-3.92-1.53-7.6-4.06-10.5zm-10.6 22.66h-.01a12.1 12.1 0 0 1-6.16-1.69l-.44-.26-4.87 1.34 1.3-4.74-.29-.49a12.2 12.1 0 0 1-1.87-6.5c0-6.71 5.46-12.16 12.18-12.16 3.26 0 6.33 1.27 8.63 3.57a12.1 12.1 0 0 1 3.56 8.6c0 6.71-5.46 12.33-12.03 12.33z"/></svg>
+            </span>
+            Send via WhatsApp
+          </button>
+
+          <a class="btn secondary" id="btnEmailLead" href="mailto:swapnil.jagtap@theadaptiv.com">
+            <span class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/></svg>
+            </span>
+            Send via Email
+          </a>
+
+          <a class="btn" id="teamsOutlookLink2" target="_blank" rel="noopener">
+            <span class="icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M15 3H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm0 16H5V5h10v14z"/><path d="M21 7h-3v10h3l2-2V9l-2-2z"/></svg>
+            </span>
+            Schedule Teams Meeting
+          </a>
+        </div>
+
+        <p class="note"><strong>💡 Teams Meeting:</strong> Opens Outlook with my email prefilled. Choose your time, enable <b>Teams meeting</b>, and send the invite.</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<div class="container footer reveal">
+  ©All copyrights reserved, Adaptiv. 2026
+</div>
+
+<!-- WhatsApp floating -->
 <a class="wa-float" id="waFloat" href="#" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
   <svg viewBox="0 0 32 32" aria-hidden="true">
     <path d="M19.11 17.39c-.26-.13-1.53-.75-1.77-.84-.24-.09-.41-.13-.58.13-.17.26-.66.84-.81 1.01-.15.17-.3.19-.56.06-.26-.13-1.11-.41-2.11-1.31-.78-.69-1.31-1.54-1.47-1.8-.15-.26-.02-.4.11-.53.12-.12.26-.3.39-.45.13-.15.17-.26.26-.43.09-.17.04-.32-.02-.45-.06-.13-.58-1.39-.79-1.9-.21-.5-.42-.43-.58-.44-.15-.01-.32-.01-.49-.01s-.45.06-.69.32c-.24.26-.9.88-.9 2.14 0 1.26.93 2.48 1.06 2.65.13.17 1.83 2.79 4.43 3.91.62.27 1.11.43 1.49.55.62.2 1.19.17 1.64.1.5-.08 1.53-.62 1.75-1.22.22-.6.22-1.12.15-1.22-.06-.1-.24-.17-.5-.3z"/>
@@ -708,7 +787,7 @@ textarea{min-height:120px;resize:vertical;line-height:1.6}
   </svg>
 </a>
 
-<!-- Sticky CTA -->
+<!-- Sticky bar -->
 <div class="sticky" role="navigation" aria-label="Quick actions">
   <div class="wrap">
     <a class="primary" href="#contact">Request Site Visit</a>
@@ -727,20 +806,23 @@ const PROFILE = {
   whatsappNumber: "971525256910",
 };
 
-// Reveal animation
+/* Reveal animations */
 const reveals = document.querySelectorAll(".reveal");
 const io = new IntersectionObserver((entries)=>{
   entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add("show"); });
 },{threshold:0.12, rootMargin:"0px 0px -8% 0px"});
 reveals.forEach(el=>io.observe(el));
 
+/* WhatsApp links */
 function buildWhatsAppLink(text){
   return `https://wa.me/${PROFILE.whatsappNumber}?text=${encodeURIComponent(text)}`;
 }
 const waDefault = buildWhatsAppLink("Hello, I would like to discuss ADAPTIV solutions and request a site visit.");
 document.getElementById("waFloat").href = waDefault;
 document.getElementById("stickyWhatsApp").href = waDefault;
+document.getElementById("btnWhatsAppQuick").href = waDefault;
 
+/* Lead helpers */
 function getLead(){
   return {
     name: document.getElementById("fName").value.trim(),
@@ -759,16 +841,16 @@ Request from ADAPTIV landing page:
 Name: ${l.name}
 Company: ${l.company}
 Phone: ${l.phone}
-Email: ${l.email || "-" }
-Industry: ${l.industry}
+Email: ${l.email || "-"}
 
+Industry: ${l.industry}
 Requirement:
 ${l.msg || "-"}
 
 Preferred next step: Call / Teams / Site Visit.`;
 }
 
-// WhatsApp lead
+/* WhatsApp lead submission */
 document.getElementById("btnWhatsAppLead").addEventListener("click", ()=>{
   const l = getLead();
   if(!l.name || !l.company || !l.phone){
@@ -778,7 +860,7 @@ document.getElementById("btnWhatsAppLead").addEventListener("click", ()=>{
   window.open(buildWhatsAppLink(buildLeadMessage(l)), "_blank");
 });
 
-// Email lead
+/* Email lead submission */
 document.getElementById("btnEmailLead").addEventListener("click", (e)=>{
   const l = getLead();
   if(!l.name || !l.company || !l.phone){
@@ -791,12 +873,11 @@ document.getElementById("btnEmailLead").addEventListener("click", (e)=>{
   e.currentTarget.href = `mailto:${PROFILE.email}?subject=${subject}&body=${body}`;
 });
 
-// Teams / Outlook link (client selects time)
+/* Teams meeting via Outlook compose (client chooses availability) */
 function buildOutlookComposeLinkNoTime(lOptional){
   const subject = encodeURIComponent("ADAPTIV Discussion – Lean Assessment / Site Visit Planning");
   const to = encodeURIComponent(PROFILE.email);
   const location = encodeURIComponent("Microsoft Teams");
-
   const baseBody =
 `Hello,
 
@@ -812,20 +893,22 @@ Please enable the Teams meeting option in Outlook and send the invite.
 Thank you,`;
 
   const extra = lOptional ? `\n\n---\nRequester Details:\nName: ${lOptional.name}\nCompany: ${lOptional.company}\nPhone: ${lOptional.phone}\nEmail: ${lOptional.email || "-"}\nIndustry: ${lOptional.industry}\nRequirement: ${lOptional.msg || "-"}` : "";
+
   const body = encodeURIComponent(baseBody + extra);
 
   return `https://outlook.office.com/calendar/deeplink/compose?subject=${subject}&to=${to}&location=${location}&body=${body}&path=/calendar/action/compose&rru=addevent`;
 }
-
-const teamsEl = document.getElementById("teamsOutlookLink");
-teamsEl.href = buildOutlookComposeLinkNoTime();
+document.getElementById("teamsOutlookLink").href = buildOutlookComposeLinkNoTime();
+document.getElementById("teamsOutlookLink2").href = buildOutlookComposeLinkNoTime();
 
 document.getElementById("leadForm").addEventListener("input", ()=>{
   const l = getLead();
-  teamsEl.href = (l.name || l.company || l.phone || l.email || l.msg) ? buildOutlookComposeLinkNoTime(l) : buildOutlookComposeLinkNoTime();
+  const link = (l.name || l.company || l.phone || l.email || l.msg) ? buildOutlookComposeLinkNoTime(l) : buildOutlookComposeLinkNoTime();
+  document.getElementById("teamsOutlookLink").href = link;
+  document.getElementById("teamsOutlookLink2").href = link;
 });
 
-// vCard
+/* vCard generation */
 function buildVCard(){
   return [
     "BEGIN:VCARD",
@@ -855,8 +938,87 @@ document.getElementById("btnDownloadVcard").addEventListener("click", (e)=>{
   e.preventDefault();
   downloadTextFile("Swapnil_Jagtap_ADAPTIV.vcf", buildVCard());
 });
+
+/* =========================
+   BRANCHES MAP (Leaflet + OSM)
+   ========================= */
+const map = L.map("branchesMap", {
+  scrollWheelZoom:false,
+  zoomControl:true
+}).setView([26.8, 39.5], 4);
+
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  maxZoom: 18,
+  attribution: "&copy; OpenStreetMap contributors"
+}).addTo(map);
+
+const COLORS = {
+  HQ: "#111111",
+  WAREHOUSE: "#25D366",
+  FACTORY: "#FDB813",
+  SALES: "#2D6CDF",
+  ENGINEERING: "#8E44AD"
+};
+
+function addDot(lat, lng, color, title, lines){
+  const marker = L.circleMarker([lat, lng], {
+    radius: 8,
+    color: "#ffffff",
+    weight: 2,
+    fillColor: color,
+    fillOpacity: 0.95
+  }).addTo(map);
+
+  const html = `
+    <div style="font-family:Arial,sans-serif;line-height:1.45">
+      <div style="font-weight:900;margin-bottom:6px">${title}</div>
+      <div style="color:#333">${lines.join("<br>")}</div>
+    </div>`;
+  marker.bindPopup(html);
+  return marker;
+}
+
+/* Locations (city-level) */
+addDot(24.7136, 46.6753, COLORS.HQ, "Riyadh, Saudi Arabia", [
+  "Headquarters",
+  "Factory Location",
+  "Regional Sales Office"
+]);
+
+addDot(28.3835, 36.5662, COLORS.WAREHOUSE, "Tabouk, Saudi Arabia", [
+  "Central Warehouse"
+]);
+
+addDot(26.4207, 50.0888, COLORS.FACTORY, "Dammam, Saudi Arabia", [
+  "Factory Location",
+  "Regional Sales Office"
+]);
+
+addDot(21.4858, 39.1925, COLORS.SALES, "Jeddah, Saudi Arabia", [
+  "Regional Sales Office"
+]);
+
+addDot(30.0444, 31.2357, COLORS.FACTORY, "Cairo, Egypt", [
+  "Factory Location",
+  "Regional Sales Office"
+]);
+
+addDot(31.9539, 35.9106, COLORS.ENGINEERING, "Amman, Jordan", [
+  "Engineering Design Centre",
+  "Regional Sales Office"
+]);
+
+addDot(24.4539, 54.3773, COLORS.SALES, "Abu Dhabi, United Arab Emirates", [
+  "Regional Sales Office"
+]);
+
+/* Fit bounds nicely */
+const bounds = L.latLngBounds([
+  [20.8, 31.0],
+  [33.3, 55.8]
+]);
+map.fitBounds(bounds, {padding:[24,24]});
 </script>
 
 </body>
 </html>
-
